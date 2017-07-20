@@ -40,7 +40,7 @@ class room(object): #
 
                   for _user in self.__users.values(): #
 
-                        _user.connection.send(str.encode('[%s] %s\n' % (user.name, message)))
+                        _user.connection.send(str.encode('\n[%s] %s\n' % (user.name, message)))
 
                   #
 
@@ -66,9 +66,13 @@ class server(object): #
 
             self.socket = socket.socket();
 
+            self.address = socket.gethostbyname(socket.gethostname())
+
             self.__rooms = {};
 
             self.__users = {};
+
+            print('Chirp server at %s listening on port %s' % (self.address, self.settings['port']));
 
             self.listen();
             
@@ -148,7 +152,7 @@ class server(object): #
 
 #
 
-
+server()
 
             
                         
