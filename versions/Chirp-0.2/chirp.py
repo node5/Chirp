@@ -1,5 +1,6 @@
 'Chirp, host a simple chat server. Written by Kale Champagnie <node5@github.com>'
-from subprocess import call
+from app import init
+from app import start
 from sys import argv
 from sys import stdout
 from sys import stdin
@@ -29,10 +30,10 @@ commands:
         command = args[1]
 
         if (command == 'init'):
-            call('app/init.py', shell=True)
+            init.main()
 
         elif (command == 'start'):
-            call('app/start.py', shell=True)
+            start.main()
           
         else:
             stderr.write('chirp: unknown command')
