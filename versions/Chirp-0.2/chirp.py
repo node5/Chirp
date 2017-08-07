@@ -3,7 +3,7 @@ from sys import argv
 from app import create
 from app import start
 from app import change
-from app import servers
+from app import list
 from app import delete
 
 
@@ -44,8 +44,8 @@ author:
         elif (command == 'change'):
             change.main()
 
-        elif (command == 'servers'):
-            servers.main()
+        elif (command == 'list'):
+            list.main()
 
         elif (command == 'delete'):
             delete.main()

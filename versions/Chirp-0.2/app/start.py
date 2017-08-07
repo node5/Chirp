@@ -74,7 +74,9 @@ class server(object):
         
 
 def main():
-    file = open('../save/settings.json')
+    server = input('server name: ')
+    
+    file = open('../save/servers/%s.json' % server)
     settings = json.load(file)
 
     name = settings['name']
