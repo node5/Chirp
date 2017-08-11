@@ -1,162 +1,56 @@
-import argparse, json, socket, re;
-
-from _thread import *;
-      
-
-
-class user(object): #
-
-      def __init__(self, name, address, connection): #
-
-            self.name = name;
-
-            self.address = address;
-
-            self.connection = connection;
-
-      #
-
-#
-
-
-
-class room(object): #
-
-      def __init__(self, name): #
-
-            self.name = name;
-
-            self.__users = {};
-
-      #
-
-      def accept(self, user): #
-
-            self.__users[user.name] = user;
-
-            while (True): #
-
-                  message = user.connection.recv(1024).decode('utf-8')
-
-                  for _user in self.__users.values(): #
-
-                        _user.connection.send(str.encode('\n[%s] %s\n' % (user.name, message)))
-
-                  #
-
-            #
-
-      #
-
-      def remove(self, name): #
-
-            self.__users.pop(name);
-
-      #
-
-#
-
-
-      
-class server(object): #
-
-      def __init__(self): #
-
-            self.settings = json.load(open('data/settings.json'));
-
-            self.socket = socket.socket();
-
-            self.address = socket.gethostbyname(socket.gethostname())
-
-            self.__rooms = {};
-
-            self.__users = {};
-
-            print('Chirp server at %s listening on port %s' % (self.address, self.settings['port']));
-
-            self.listen();
-            
-      #
-
-      def listen(self): #
-      
-            self.socket.bind((self.settings['host'], self.settings['port']));
-            
-            while (True): #
-
-                  self.socket.listen(5);
-
-                  connection, address = self.socket.accept();
-
-                  start_new_thread(self.handle, (connection, address));
-
-            #
-
-      #
-
-      def handle(self, connection, address): #
-            
-            connection.send(str.encode('your name: ')); # [-]
-            
-            user_name = connection.recv(1024).decode('utf-8').strip();
-
-            self.__users[user_name] = user(user_name, address[0], connection);
-
-
-
-            while (True): #
-                  
-                  connection.send(str.encode('action: ')); # [-]
-                  
-                  action = connection.recv(1024).decode('utf-8').strip();
-
-                  if (action == 'create'): #
-                        
-                        connection.send(str.encode('room name: ')); # [-]
-                        
-                        room_name = connection.recv(1024).decode('utf-8');
-
-                        self.__rooms[room_name] = room(room_name);
-
-                  #
-
-                  elif (action == 'join'): #
-                        
-                        connection.send(str.encode('room name: ')); # [-]
-                        
-                        room_name = connection.recv(1024).decode('utf-8');
-
-                        self.__rooms[room_name].accept(self.__users[user_name]);    
-
-                  #
-
-                  elif (action == 'rooms'): #
-
-                        for room_name in self.__rooms.keys(): #
-
-                              connection.send(str.encode('%s\n' % (room_name)));
-                              
-                        #
-
-                  #
-      
-                  else: #
-
-                        connection.send(str.encode('error: unknown action %s\n' % (action)));
-
-                  #
-
-            #
-
-      #
-
-#
-
-server()
-
-            
-                        
-      
-
-            
-
+'Chirp, host your own chat server. Written by Kale Champagnie <node5@github.com>'
+from sys import argv
+from app import create
+from app import start
+from app import change
+from app import list
+from app import delete
+
+
+
+def main(args): 
+    if (len(args) < 2):
+        print('''
+usage:
+   chirp <command>
+
+purpose:
+   Chirp lets you host chat servers on your network. Once a user connects, they can choose to create or join a room.
+   Users connect to your server via chirp clients such as Eime. Clients are available to download from github.com/node5/Chirp/clients.
+
+commands:
+   create   create a new server
+   start    start a server, allow clients to connect      
+   change   change a server's settings
+   list     list existing servers
+   delete   delete a server
+   
+author:
+   Kale Champagnie <node5@github.com>
+''')
+        
+    elif (len(args) > 2):
+        print('chirp: to many arguments were given')
+          
+    else:
+        command = args[1]
+
+        if (command == 'create'):
+            create.main()
+
+        elif (command == 'start'):
+            start.main()
+
+        elif (command == 'change'):
+            change.main()
+
+        elif (command == 'list'):
+            list.main()
+
+        elif (command == 'delete'):
+            delete.main()
+          
+        else:
+            print('chirp: unknown command')
+
+main(argv)
